@@ -5,7 +5,7 @@
 	<groupId>com.rc</groupId>
 	<artifactId>spoonbill</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 
 	<name>Spoonbill</name>
 	<description>A testing library</description>
@@ -24,7 +24,7 @@
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.dbunit</groupId>
 			<artifactId>dbunit</artifactId>
@@ -44,7 +44,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -56,7 +56,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -68,47 +68,18 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
-	</dependencies>
-	
-		<build>
-		<finalName>spoonbill-backend</finalName>
 
-		<pluginManagement>
-		  <plugins>
-		    <plugin>
-		     <groupId>org.eclipse.m2e</groupId>
-		     <artifactId>lifecycle-mapping</artifactId>
-		     <version>1.0.0</version>
-		     <configuration>
-		       <lifecycleMappingMetadata>
-		         <pluginExecutions>
-		           <pluginExecution>
-		             <pluginExecutionFilter>
-		               <groupId>some-group-id</groupId>
-		               <artifactId>some-artifact-id</artifactId>
-		               <versionRange>[1.0.0,)</versionRange>
-		               <goals>
-		                 <goal>some-goal</goal>
-		               </goals>
-		             </pluginExecutionFilter>
-		             <action>
-		               <ignore/>
-		             </action>
-		           </pluginExecution>
-		         </pluginExecutions>
-		       </lifecycleMappingMetadata>
-		     </configuration>
-		    </plugin>
-		  </plugins>
-		</pluginManagement>
-        
+	</dependencies>
+
+	<build>
+		<finalName>${artifactId}-${version}</finalName>
+
 		<plugins>
 
 			<plugin>
@@ -122,7 +93,21 @@
 					<compilerArgument>-proc:none</compilerArgument>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
 		</plugins>
-		
+
 	</build>
 </project>

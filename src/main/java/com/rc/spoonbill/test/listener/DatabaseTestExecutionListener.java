@@ -22,12 +22,13 @@ public class DatabaseTestExecutionListener extends AbstractTestExecutionListener
 	@Override
 	public void beforeTestMethod(TestContext testContext) throws Exception {
 
-		DataSet dataSetAnnotation = getAnnotation(DataSet.class, testContext);
+		// Create a DatabaseTester instance
+		databaseTester = (IDatabaseTester) testContext.getApplicationContext().getBean("databaseTester");
 
+		DataSet dataSetAnnotation = getAnnotation(DataSet.class, testContext);
 		if (dataSetAnnotation != null) {
 			FlatXmlDataFileLoader flatXmlDataFileLoader = (FlatXmlDataFileLoader) testContext.getApplicationContext()
 					.getBean("flatXmlDataFileLoader");
-			databaseTester = (IDatabaseTester) testContext.getApplicationContext().getBean("databaseTester");
 			databaseTester.setDataSet(flatXmlDataFileLoader.load(dataSetAnnotation.value()));
 			databaseTester.onSetup();
 		}
