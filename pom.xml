@@ -75,6 +75,13 @@
 			<version>${spring.version}</version>
 		</dependency>
 
+		<!-- Apache -->
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.2</version>
+		</dependency>
+
 		<!-- Email -->
 		<dependency>
 			<groupId>javax.mail</groupId>
