@@ -9,23 +9,21 @@ import org.spockframework.runtime.model.FieldInfo;
 import org.spockframework.runtime.model.SpecInfo;
 import org.springframework.context.ApplicationContext;
 
-import com.rc.spoonbill.test.annotation.JsonDataSet;
+import com.rc.spoonbill.test.DataSetSourceContainer;
 import com.rc.spoonbill.test.exception.ApplicationContextNotFoundException;
 
 public class JsonDataSetInterceptor extends AbstractMethodInterceptor {
 
-    private JsonDataSet annotation;
     private SpecInfo spec;
     private IDatabaseTester databaseTester;
     private IDataSet dataSet;
+    private DataSetSourceContainer container;
 
-    public JsonDataSetInterceptor(JsonDataSet annotation) {
-        this.annotation = annotation;
-    }
-
-    public void register(SpecInfo spec) {
+    public JsonDataSetInterceptor(SpecInfo spec, DataSetSourceContainer container) {
 
         this.spec = spec;
+        this.container = container;
+
         spec.addSetupInterceptor(this);
         spec.addCleanupInterceptor(this);
     }
@@ -33,9 +31,13 @@ public class JsonDataSetInterceptor extends AbstractMethodInterceptor {
     @Override
     public void interceptSetupMethod(IMethodInvocation invocation) throws Throwable {
 
+        if (this.container.getDataSetSources() == null) {
+            return;
+        }
+
         ApplicationContext applicationContext = getContext(invocation);
         this.databaseTester = (IDatabaseTester) applicationContext.getBean("databaseTester");
-        for (String dataSource : annotation.value()) {
+        for (String dataSource : this.container.getDataSetSources()) {
 
             this.dataSet = new com.rc.spoonbill.test.dataset.JsonDataSet(applicationContext.getResource(dataSource).getFile());
             databaseTester.setDataSet(dataSet);
