@@ -5,7 +5,7 @@
 	<groupId>com.rc</groupId>
 	<artifactId>spoonbill</artifactId>
 	<packaging>jar</packaging>
-	<version>0.6.1</version>
+	<version>0.6.2</version>
 
 	<name>Spoonbill</name>
 	<description>A testing library</description>
