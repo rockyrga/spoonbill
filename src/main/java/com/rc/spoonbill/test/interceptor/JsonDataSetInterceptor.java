@@ -1,5 +1,7 @@
 package com.rc.spoonbill.test.interceptor;
 
+import java.util.Stack;
+
 import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.operation.DatabaseOperation;
@@ -16,7 +18,7 @@ public class JsonDataSetInterceptor extends AbstractMethodInterceptor {
 
     private SpecInfo spec;
     private IDatabaseTester databaseTester;
-    private IDataSet dataSet;
+    private Stack<IDataSet> dataSets;
     private DataSetSourceContainer container;
 
     public JsonDataSetInterceptor(SpecInfo spec, DataSetSourceContainer container) {
@@ -26,6 +28,8 @@ public class JsonDataSetInterceptor extends AbstractMethodInterceptor {
 
         spec.addSetupInterceptor(this);
         spec.addCleanupInterceptor(this);
+
+        this.dataSets = new Stack<IDataSet>();
     }
 
     @Override
@@ -39,9 +43,11 @@ public class JsonDataSetInterceptor extends AbstractMethodInterceptor {
         this.databaseTester = (IDatabaseTester) applicationContext.getBean("databaseTester");
         for (String dataSource : this.container.getDataSetSources()) {
 
-            this.dataSet = new com.rc.spoonbill.test.dataset.JsonDataSet(applicationContext.getResource(dataSource).getFile());
+            IDataSet dataSet =
+                    new com.rc.spoonbill.test.dataset.JsonDataSet(applicationContext.getResource(dataSource).getFile());
             databaseTester.setDataSet(dataSet);
             databaseTester.onSetup();
+            dataSets.push(dataSet);
         }
 
         invocation.proceed();
@@ -50,13 +56,16 @@ public class JsonDataSetInterceptor extends AbstractMethodInterceptor {
     @Override
     public void interceptCleanupMethod(IMethodInvocation invocation) throws Throwable {
 
-        if (dataSet != null) {
+        int stackSize = dataSets.size();
+        for (int seq = 0; seq < stackSize; seq++) {
 
+            IDataSet dataSet = dataSets.pop();
             DatabaseOperation.CLEAN_INSERT.execute(databaseTester.getConnection(), dataSet);
             DatabaseOperation.DELETE_ALL.execute(databaseTester.getConnection(), dataSet);
-            databaseTester.getConnection().close();
-            databaseTester.onTearDown();
         }
+
+        databaseTester.getConnection().close();
+        databaseTester.onTearDown();
     }
 
     private ApplicationContext getContext(IMethodInvocation invocation) {
