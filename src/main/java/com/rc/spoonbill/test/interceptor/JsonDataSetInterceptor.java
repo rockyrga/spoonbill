@@ -44,7 +44,7 @@ public class JsonDataSetInterceptor extends AbstractMethodInterceptor {
         for (String dataSource : this.container.getDataSetSources()) {
 
             IDataSet dataSet =
-                    new com.rc.spoonbill.test.dataset.JsonDataSet(applicationContext.getResource(dataSource).getFile());
+                    new com.rc.spoonbill.test.dataset.JsonDataSets(applicationContext.getResource(dataSource).getFile());
             databaseTester.setDataSet(dataSet);
             databaseTester.onSetup();
             dataSets.push(dataSet);

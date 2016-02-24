@@ -19,6 +19,11 @@ public class JsonDataSetExtenstion extends AbstractAnnotationDrivenExtension<Jso
     private Map<String, String[]> dataSetMap = new HashMap<String, String[]>();
 
     @Override
+    public void visitSpecAnnotation(JsonDataSet annotation, SpecInfo spec) {
+        dataSetMap.put(spec.getName(), annotation.value());
+    }
+
+    @Override
     public void visitFeatureAnnotation(JsonDataSet annotation, FeatureInfo feature) {
 
         // Collect all features

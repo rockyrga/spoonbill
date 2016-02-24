@@ -79,7 +79,7 @@ import org.dbunit.dataset.datatype.DataType;
  *
  * @author Lieven DOCLO
  */
-public class JsonDataSet extends AbstractDataSet {
+public class JsonDataSets extends AbstractDataSet {
 
     private JSONITableParser tableParser = new JSONITableParser();
 
@@ -92,7 +92,7 @@ public class JsonDataSet extends AbstractDataSet {
      * @param file
      *        A JSON dataset file
      */
-    public JsonDataSet(File file) {
+    public JsonDataSets(File file) {
         tables = tableParser.getTables(file);
     }
 
@@ -102,7 +102,7 @@ public class JsonDataSet extends AbstractDataSet {
      * @param is
      *        An inputstream pointing to a JSON dataset
      */
-    public JsonDataSet(InputStream is) {
+    public JsonDataSets(InputStream is) {
         tables = tableParser.getTables(is);
     }
 
