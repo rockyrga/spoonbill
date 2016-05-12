@@ -15,51 +15,54 @@ import com.rc.spoonbill.test.annotation.DataSet;
 
 public class DatabaseTestExecutionListener extends AbstractTestExecutionListener {
 
-	private IDatabaseTester databaseTester;
+    private IDatabaseTester databaseTester;
 
-	private IDatabaseConnection connection;
+    private IDatabaseConnection connection;
 
-	@Override
-	public void beforeTestMethod(TestContext testContext) throws Exception {
+    @Override
+    public void beforeTestMethod(TestContext testContext) throws Exception {
 
-		// Create a DatabaseTester instance
-		databaseTester = (IDatabaseTester) testContext.getApplicationContext().getBean("databaseTester");
+        DataSet dataSetAnnotation = getAnnotation(DataSet.class, testContext);
+        if (dataSetAnnotation != null) {
 
-		DataSet dataSetAnnotation = getAnnotation(DataSet.class, testContext);
-		if (dataSetAnnotation != null) {
-			FlatXmlDataFileLoader flatXmlDataFileLoader = (FlatXmlDataFileLoader) testContext.getApplicationContext()
-					.getBean("flatXmlDataFileLoader");
-			databaseTester.setDataSet(flatXmlDataFileLoader.load(dataSetAnnotation.value()));
-			databaseTester.onSetup();
-		}
+            // Create a DatabaseTester instance
+            databaseTester = (IDatabaseTester) testContext.getApplicationContext().getBean("databaseTester");
 
-		this.connection = databaseTester.getConnection();
-	}
+            if (dataSetAnnotation != null) {
+                FlatXmlDataFileLoader flatXmlDataFileLoader =
+                        (FlatXmlDataFileLoader) testContext.getApplicationContext().getBean("flatXmlDataFileLoader");
+                databaseTester.setDataSet(flatXmlDataFileLoader.load(dataSetAnnotation.value()));
+                databaseTester.onSetup();
+            }
 
-	@Override
-	public void afterTestMethod(TestContext testContext) throws Exception {
+            this.connection = databaseTester.getConnection();
+        }
+    }
 
-		// Clear up testing data if exists
-		if (databaseTester != null) {
+    @Override
+    public void afterTestMethod(TestContext testContext) throws Exception {
 
-			CleanUp cleanUpAnnotation = getAnnotation(CleanUp.class, testContext);
-			if (cleanUpAnnotation != null) {
-				IDataSet dataSet = connection.createDataSet(cleanUpAnnotation.value());
-				DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
-			}
+        // Clear up testing data if exists
+        if (databaseTester != null) {
 
-			this.connection.close();
-			databaseTester.onTearDown();
-		}
-	}
+            CleanUp cleanUpAnnotation = getAnnotation(CleanUp.class, testContext);
+            if (cleanUpAnnotation != null) {
+                IDataSet dataSet = connection.createDataSet(cleanUpAnnotation.value());
+                DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
+            }
 
-	private <A extends Annotation> A getAnnotation(Class<A> annotationClass, TestContext testContext) {
+            this.connection.close();
+            databaseTester.onTearDown();
+        }
+    }
 
-		A annotation = testContext.getTestClass().getAnnotation(annotationClass);
-		if (annotation == null) {
-			annotation = testContext.getTestMethod().getAnnotation(annotationClass);
-		}
+    private <A extends Annotation> A getAnnotation(Class<A> annotationClass, TestContext testContext) {
 
-		return annotation;
-	}
+        A annotation = testContext.getTestClass().getAnnotation(annotationClass);
+        if (annotation == null) {
+            annotation = testContext.getTestMethod().getAnnotation(annotationClass);
+        }
+
+        return annotation;
+    }
 }
