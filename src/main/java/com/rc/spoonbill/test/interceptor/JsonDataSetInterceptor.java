@@ -66,6 +66,8 @@ public class JsonDataSetInterceptor extends AbstractMethodInterceptor {
 
         databaseTester.getConnection().close();
         databaseTester.onTearDown();
+
+        invocation.proceed();
     }
 
     private ApplicationContext getContext(IMethodInvocation invocation) {
