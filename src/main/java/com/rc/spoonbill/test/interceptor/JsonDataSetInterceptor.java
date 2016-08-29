@@ -3,6 +3,7 @@ package com.rc.spoonbill.test.interceptor;
 import java.util.Stack;
 
 import org.dbunit.IDatabaseTester;
+import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.spockframework.runtime.extension.AbstractMethodInterceptor;
@@ -57,14 +58,16 @@ public class JsonDataSetInterceptor extends AbstractMethodInterceptor {
     public void interceptCleanupMethod(IMethodInvocation invocation) throws Throwable {
 
         int stackSize = dataSets.size();
+        IDatabaseConnection connection = databaseTester.getConnection();
+
         for (int seq = 0; seq < stackSize; seq++) {
 
             IDataSet dataSet = dataSets.pop();
-            DatabaseOperation.CLEAN_INSERT.execute(databaseTester.getConnection(), dataSet);
-            DatabaseOperation.DELETE_ALL.execute(databaseTester.getConnection(), dataSet);
+            DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
+            DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
         }
 
-        databaseTester.getConnection().close();
+        connection.close();
         databaseTester.onTearDown();
 
         invocation.proceed();
